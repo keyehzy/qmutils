@@ -106,7 +106,7 @@ TEST_F(TermTest, EmptyOperatorSequence) {
 }
 
 TEST_F(TermTest, LargeNumberOfOperators) {
-  std::vector<Operator> large_ops(1000, op1);
+  Term::container_type large_ops(1000, op1);
   Term term(coeff, large_ops);
   EXPECT_EQ(term.size(), 1000);
   EXPECT_EQ(term.coefficient(), coeff);

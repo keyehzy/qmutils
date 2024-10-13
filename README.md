@@ -20,6 +20,7 @@ computations.
 
 - C++17 compatible compiler
 - CMake (version 3.10 or higher)
+- Boost (for boost::container::small_vector)
 - Google Test (for running tests)
 - Google Benchmark (for running benchmarks)
 

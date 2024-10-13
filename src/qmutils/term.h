@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/container/small_vector.hpp>
 #include <complex>
 #include <cstdint>
 #include <string>
@@ -12,7 +13,10 @@ namespace qmutils {
 class Term {
  public:
   using coefficient_type = std::complex<float>;
-  using container_type = std::vector<Operator>;
+
+  static constexpr size_t QMUTILS_SMALL_VECTOR_SIZE = 8;
+  using container_type =
+      boost::container::small_vector<Operator, QMUTILS_SMALL_VECTOR_SIZE>;
 
   Term() = default;
 

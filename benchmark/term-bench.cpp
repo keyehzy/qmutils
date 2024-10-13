@@ -7,8 +7,8 @@
 namespace qmutils {
 namespace {
 
-std::vector<Operator> generateLargeOperatorSequence(size_t size) {
-  std::vector<Operator> ops;
+Term::container_type generateLargeOperatorSequence(size_t size) {
+  Term::container_type ops;
   ops.reserve(size);
   for (size_t i = 0; i < size; ++i) {
     ops.emplace_back(Operator::Type(i % 2), Operator::Spin(i % 2), i % 64);
