@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "qmutils/expression.h"
+#include "qmutils/lru_cache.h"
 #include "qmutils/term.h"
 
 namespace qmutils {
@@ -15,6 +16,8 @@ class NormalOrderer {
 
   NormalOrderer() = default;
 
+  explicit NormalOrderer(size_t cache_size) : m_cache(cache_size) {}
+
   Expression normal_order(const Term& term);
   Expression normal_order(const Expression& expr);
 
@@ -25,7 +28,7 @@ class NormalOrderer {
   Expression normal_order_recursive(operators_type ops);
   Expression handle_non_commuting(const operators_type& ops, size_t index);
 
-  std::unordered_map<size_t, Expression> m_cache;
+  LRUCache<size_t, Expression> m_cache{1 << 20};
 
   struct QueueElement {
     operators_type ops;

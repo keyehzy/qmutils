@@ -30,9 +30,10 @@ Expression NormalOrderer::normal_order_iterative(const operators_type& ops) {
     }
 
     auto ops_key = std::hash<operators_type>{}(current);
-    if (auto it = m_cache.find(ops_key); it != m_cache.end()) {
+    Expression cached_result;
+    if (m_cache.get(ops_key, cached_result)) {
       m_cache_hits++;
-      result += phase * it->second;
+      result += phase * cached_result;
       continue;
     }
     m_cache_misses++;
@@ -67,7 +68,7 @@ Expression NormalOrderer::normal_order_iterative(const operators_type& ops) {
       partial = Expression(Term(phase, current));
     }
 
-    m_cache[ops_key] = partial;
+    m_cache.put(ops_key, partial);
     result += partial;
   }
 
@@ -80,9 +81,10 @@ Expression NormalOrderer::normal_order_recursive(operators_type ops) {
   }
 
   auto ops_key = std::hash<operators_type>{}(ops);
-  if (auto it = m_cache.find(ops_key); it != m_cache.end()) {
+  Expression cached_result;
+  if (m_cache.get(ops_key, cached_result)) {
     m_cache_hits++;
-    return it->second;
+    return cached_result;
   }
   m_cache_misses++;
 
@@ -96,14 +98,14 @@ Expression NormalOrderer::normal_order_recursive(operators_type ops) {
         --j;
       } else {
         Expression result = phase * handle_non_commuting(ops, j - 1);
-        m_cache[ops_key] = result;
+        m_cache.put(ops_key, result);
         return result;
       }
     }
   }
 
   Expression result(Term(phase, ops));
-  m_cache[ops_key] = result;
+  m_cache.put(ops_key, result);
   return result;
 }
 

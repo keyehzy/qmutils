@@ -7,6 +7,7 @@ add_executable(
   normal_order-bench.cpp
   basis-bench.cpp
   sparse_matrix-bench.cpp
+  lru_cache-bench.cpp
 )
 
 target_include_directories(
