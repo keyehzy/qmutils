@@ -14,3 +14,4 @@ set(BENCHMARK_ENABLE_INSTALL FALSE CACHE INTERNAL "")
 set(BENCHMARK_ENABLE_GTEST_TESTS FALSE CACHE INTERNAL "")
 
 add_subdirectory(benchmark)
+add_subdirectory(xxhashct)

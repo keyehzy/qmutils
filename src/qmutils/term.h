@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "qmutils/operator.h"
+#include "xxhashct/xxh64.hpp"
 
 namespace qmutils {
 
@@ -116,34 +117,17 @@ inline Term operator*(const Term::coefficient_type& scalar, Term term) {
 template <>
 struct std::hash<qmutils::Term::container_type> {
   size_t operator()(const qmutils::Term::container_type& container) const {
-    size_t hash = 0;
-    for (const auto& op : container) {
-      hash_combine(hash, std::hash<qmutils::Operator>{}(op));
-    }
-    return hash;
-  }
-
- private:
-  template <typename T>
-  void hash_combine(size_t& seed, const T& value) const {
-    seed ^= std::hash<T>{}(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    auto begin = reinterpret_cast<const char*>(&container.data()[0]);
+    return xxh64::hash(begin, container.size(), 0);
   }
 };
 
 template <>
 struct std::hash<qmutils::Term> {
   size_t operator()(const qmutils::Term& term) const {
-    size_t hash = std::hash<float>{}(term.coefficient().real()) ^
+    size_t seed = std::hash<float>{}(term.coefficient().real()) ^
                   std::hash<float>{}(term.coefficient().imag());
-    for (const auto& op : term.operators()) {
-      hash_combine(hash, std::hash<qmutils::Operator>{}(op));
-    }
-    return hash;
-  }
-
- private:
-  template <typename T>
-  void hash_combine(size_t& seed, const T& value) const {
-    seed ^= std::hash<T>{}(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    auto begin = reinterpret_cast<const char*>(&term.operators().data()[0]);
+    return xxh64::hash(begin, term.operators().size(), seed);
   }
 };

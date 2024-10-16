@@ -13,7 +13,7 @@ target_link_libraries(
 target_compile_options(
   main
   PRIVATE
-  "${QMUTILS_CXX_COMPILER_OPTIONS}"
+  ${QMUTILS_CXX_COMPILER_OPTIONS}
 )
 
 add_library(
@@ -30,4 +30,5 @@ target_include_directories(
   qmutils
   PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
+  ${XXHASHCT_INCLUDE_DIR}
 )
