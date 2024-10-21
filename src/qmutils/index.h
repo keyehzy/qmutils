@@ -59,6 +59,8 @@ class StaticIndex {
     return m_dimensions[i];
   }
 
+  constexpr size_t size() const { return total_size(); }
+
  private:
   static constexpr std::array<size_t, Dimensions> m_dimensions = {Dims...};
 

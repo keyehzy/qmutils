@@ -44,6 +44,7 @@ file(GLOB EXAMPLE_FILES
   fourier_transform_1d.cpp
   fourier_transform_2d.cpp
   ssh_model.cpp
+  graphene.cpp
 )
 
 foreach(EXAMPLE_FILE ${EXAMPLE_FILES})
