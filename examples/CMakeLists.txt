@@ -47,6 +47,7 @@ file(GLOB EXAMPLE_FILES
   frustrated_kagome.cpp
   heisenberg_1d.cpp
   heisenberg_2d.cpp
+  heisenberg_triangular.cpp
 )
 
 foreach(EXAMPLE_FILE ${EXAMPLE_FILES})
