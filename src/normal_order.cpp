@@ -45,7 +45,11 @@ Expression NormalOrderer::normal_order_iterative(const operators_type& ops) {
       while (j > 0 && current[j] < current[j - 1]) {
         if (current[j].commutes_with(current[j - 1])) {
           std::swap(current[j], current[j - 1]);
+#ifdef USE_BOSON
+          phase *= 1.0;
+#else
           phase *= -1.0;
+#endif
           --j;
         } else {
           is_sorted = false;
@@ -56,7 +60,11 @@ Expression NormalOrderer::normal_order_iterative(const operators_type& ops) {
 
           operators_type swapped(current);
           std::swap(swapped[j - 1], swapped[j]);
+#ifdef USE_BOSON
+          m_queue.emplace(std::move(swapped), phase);
+#else
           m_queue.emplace(std::move(swapped), -phase);
+#endif
           break;
         }
       }
@@ -91,7 +99,11 @@ Expression NormalOrderer::normal_order_recursive(operators_type ops) {
     while (j > 0 && ops[j] < ops[j - 1]) {
       if (ops[j].commutes_with(ops[j - 1])) {
         std::swap(ops[j], ops[j - 1]);
+#ifdef USE_BOSON
+        phase *= 1.0;
+#else
         phase *= -1.0;
+#endif
         --j;
       } else {
         Expression result = phase * handle_non_commuting(ops, j - 1);
@@ -112,7 +124,11 @@ Expression NormalOrderer::handle_non_commuting(const operators_type& ops,
   contracted.erase(contracted.begin() + index, contracted.begin() + index + 2);
   operators_type swapped(ops);
   std::swap(swapped[index], swapped[index + 1]);
+#ifdef USE_BOSON
+  return normal_order_recursive(contracted) + normal_order_recursive(swapped);
+#else
   return normal_order_recursive(contracted) - normal_order_recursive(swapped);
+#endif
 }
 
 void NormalOrderer::print_cache_stats() const {

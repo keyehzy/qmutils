@@ -41,3 +41,13 @@ target_link_libraries(
   xxhashct
   OpenMP::OpenMP_CXX
 )
+
+option(USE_BOSON "Build qmutils with bosonic operators" OFF)
+
+if(USE_BOSON)
+  target_compile_definitions(
+  qmutils
+  PUBLIC
+  USE_BOSON
+  )
+endif()

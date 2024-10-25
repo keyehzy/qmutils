@@ -24,17 +24,32 @@ static constexpr uint64_t qmutils_choose(uint64_t n, uint64_t m) {
   return result;
 }
 
+static constexpr uint64_t qmutils_compute_basis_size(size_t orbitals,
+                                                     size_t particles) {
+#ifdef USE_BOSON
+  size_t total_size = 1;
+  for (size_t n = 1; n <= particles; ++n) {
+    total_size += qmutils_choose(orbitals + n - 1, n);
+  }
+#else
+  size_t total_size = qmutils_choose(2 * orbitals, particles);
+#endif
+  return total_size;
+}
+
 class Basis {
  public:
   using operators_type = Term::container_type;
 
   Basis(size_t orbitals, size_t particles)
       : m_orbitals(orbitals), m_particles(particles) {
+#ifndef USE_BOSON
     QMUTILS_ASSERT(particles <= 2 * orbitals);
+#endif
     m_index_map.reserve(qmutils_choose(2 * orbitals, particles));
     generate_basis();
     QMUTILS_ASSERT(m_index_map.size() ==
-                   qmutils_choose(2 * orbitals, particles));
+                   qmutils_compute_basis_size(orbitals, particles));
     std::sort(m_index_map.begin(), m_index_map.end());
   }
 
@@ -86,7 +101,7 @@ class Basis {
   void generate_basis();
 
   void generate_combinations(operators_type& current, size_t first_orbital,
-                             size_t depth);
+                             size_t depth, size_t max_depth);
 
   size_t m_orbitals;
   size_t m_particles;

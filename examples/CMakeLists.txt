@@ -39,6 +39,7 @@ function(add_example example_file)
 endfunction()
 
 file(GLOB EXAMPLE_FILES
+  harmonic_oscillator_1d.cpp
   hubbard_1d.cpp
   hubbard_1d_mean_field.cpp
   fourier_transform_1d.cpp

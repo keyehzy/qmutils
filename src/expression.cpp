@@ -9,9 +9,12 @@ void Expression::normalize() {
   // 2) Remove terms with adjacent identical operators
   for (auto it = m_terms.begin(); it != m_terms.end();) {
     if ((std::abs(it->second) <
-         std::numeric_limits<coefficient_type::value_type>::epsilon()) ||
-        (std::adjacent_find(it->first.begin(), it->first.end()) !=
-         it->first.end())) {
+         std::numeric_limits<coefficient_type::value_type>::epsilon())
+#ifndef USE_BOSON
+        || (std::adjacent_find(it->first.begin(), it->first.end()) !=
+            it->first.end())
+#endif
+    ) {
       it = m_terms.erase(it);
     } else {
       ++it;
