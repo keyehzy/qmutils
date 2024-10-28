@@ -46,11 +46,12 @@ class Basis {
 #ifndef USE_BOSON
     QMUTILS_ASSERT(particles <= 2 * orbitals);
 #endif
-    m_index_map.reserve(qmutils_choose(2 * orbitals, particles));
+    m_basis_states.reserve(qmutils_choose(2 * orbitals, particles));
     generate_basis();
-    QMUTILS_ASSERT(m_index_map.size() ==
-                   qmutils_compute_basis_size(orbitals, particles));
-    std::sort(m_index_map.begin(), m_index_map.end());
+    std::sort(m_basis_states.begin(), m_basis_states.end(),
+              [](const Term& a, const Term& b) {
+                return a.operators() < b.operators();
+              });
   }
 
   Basis(const Basis&) = default;
@@ -62,39 +63,50 @@ class Basis {
 
   size_t orbitals() const noexcept { return m_orbitals; }
   size_t particles() const noexcept { return m_particles; }
-  size_t size() const noexcept { return m_index_map.size(); }
+  size_t size() const noexcept { return m_basis_states.size(); }
 
   bool operator==(const Basis& other) const {
     return m_orbitals == other.m_orbitals && m_particles == other.m_particles &&
-           m_index_map == other.m_index_map;
+           m_basis_states == other.m_basis_states;
   }
 
   bool operator!=(const Basis& other) const { return !(*this == other); }
 
-  bool contains(const operators_type& value) const {
-    auto it = std::lower_bound(m_index_map.begin(), m_index_map.end(), value);
-    return it != m_index_map.end() && *it == value;
+  bool contains(const operators_type& ops) const {
+    Term term(ops);
+    auto it = std::lower_bound(m_basis_states.begin(), m_basis_states.end(),
+                               term, [](const Term& a, const Term& b) {
+                                 return a.operators() < b.operators();
+                               });
+    return it != m_basis_states.end() && it->operators() == ops;
   }
 
-  // TODO: needs testing
-  ptrdiff_t index_of(const operators_type& value) const {
-    QMUTILS_ASSERT(contains(value));
-    auto it = std::lower_bound(m_index_map.begin(), m_index_map.end(), value);
-    return std::distance(m_index_map.begin(), it);
+  ptrdiff_t index_of(const operators_type& ops) const {
+    QMUTILS_ASSERT(contains(ops));
+    Term term(ops);
+    auto it = std::lower_bound(m_basis_states.begin(), m_basis_states.end(),
+                               term, [](const Term& a, const Term& b) {
+                                 return a.operators() < b.operators();
+                               });
+    return std::distance(m_basis_states.begin(), it);
   }
 
-  void insert(const operators_type& value) {
-    QMUTILS_ASSERT(!contains(value));
-    auto it = std::lower_bound(m_index_map.begin(), m_index_map.end(), value);
-    m_index_map.insert(it, value);
+  void insert(const operators_type& ops) {
+    QMUTILS_ASSERT(!contains(ops));
+    Term term(ops);
+    auto it = std::lower_bound(m_basis_states.begin(), m_basis_states.end(),
+                               term, [](const Term& a, const Term& b) {
+                                 return a.operators() < b.operators();
+                               });
+    m_basis_states.insert(it, term);
   }
 
-  auto begin() const noexcept { return m_index_map.begin(); }
-  auto end() const noexcept { return m_index_map.end(); }
+  auto begin() const noexcept { return m_basis_states.begin(); }
+  auto end() const noexcept { return m_basis_states.end(); }
 
   auto at(size_t i) const noexcept {
-    QMUTILS_ASSERT(i < m_index_map.size());
-    return m_index_map[i];
+    QMUTILS_ASSERT(i < m_basis_states.size());
+    return m_basis_states[i];
   }
 
  private:
@@ -103,9 +115,11 @@ class Basis {
   void generate_combinations(operators_type& current, size_t first_orbital,
                              size_t depth, size_t max_depth);
 
+  float calculate_normalization_factor(const operators_type& ops) const;
+
   size_t m_orbitals;
   size_t m_particles;
-  std::vector<operators_type> m_index_map;
+  std::vector<Term> m_basis_states;
 };
 
 }  // namespace qmutils

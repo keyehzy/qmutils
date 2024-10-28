@@ -140,8 +140,7 @@ int main() {
 
   std::cout << "Eigenvalues:" << std::endl;
   for (size_t i = 0; i < eigenvalues.n_elem; ++i) {
-    std::cout << Term(basis.at(i)).to_string() << "  " << eigenvalues(i)
-              << std::endl;
+    std::cout << basis.at(i).to_string() << "  " << eigenvalues(i) << std::endl;
   }
 
   Expression diagonal_hamiltonian =

@@ -108,7 +108,7 @@ static void print_state_components(const arma::cx_fvec& state_vector,
   std::cout << "\nState components:" << std::endl;
   for (size_t i = 0; i < basis.size(); ++i) {
     if (std::abs(state_vector(i)) > 3e-4f) {
-      Term term(state_vector(i), basis.at(i));
+      Term term(state_vector(i), basis.at(i).operators());
       std::cout << term.to_string() << std::endl;
     }
   }

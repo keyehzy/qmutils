@@ -15,7 +15,7 @@ MatrixType compute_matrix_elements_serial(const Basis& basis,
   NormalOrderer orderer;
 
   for (size_t j = 0; j < basis.size(); ++j) {
-    Expression right(Term(basis.at(j)));
+    Expression right(basis.at(j));
     Expression product = orderer.normal_order(A * right);
 
     std::erase_if(product.terms(), [&](const auto& item) {
@@ -40,7 +40,7 @@ MatrixType compute_matrix_elements(const Basis& basis, const Expression& A) {
     NormalOrderer orderer;
 #pragma omp for schedule(dynamic)
     for (size_t j = 0; j < basis.size(); ++j) {
-      Expression right(Term(basis.at(j)));
+      Expression right(basis.at(j));
       Expression product = orderer.normal_order(A * right);
 
       std::erase_if(product.terms(), [&](const auto& item) {
